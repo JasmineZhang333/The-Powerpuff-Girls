@@ -1,0 +1,18 @@
+# 微信小程序相关
+.DS_Store
+*.log
+node_modules/
+
+# IDE相关
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 云函数相关
+node_modules/
+node_modules.zip
+
+# 构建产物
+*.wxss.js
+*.wxss.wxss

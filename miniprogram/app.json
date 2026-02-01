@@ -1,0 +1,36 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/profile/profile",
+    "pages/card-detail/detail"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#1a1a1a",
+    "navigationBarTitleText": "攀岩次卡共享",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#1a1a1a"
+  },
+  "tabBar": {
+    "color": "#888888",
+    "selectedColor": "#f5a623",
+    "backgroundColor": "#1a1a1a",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "次卡广场",
+        "iconPath": "images/tabbar/card.svg",
+        "selectedIconPath": "images/tabbar/card-active.svg"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "images/tabbar/profile.svg",
+        "selectedIconPath": "images/tabbar/profile-active.svg"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

@@ -1,0 +1,99 @@
+<view class="container">
+  <view class="user-section">
+    <view class="user-info" wx:if="{{currentUser}}">
+      <view class="user-avatar">{{currentUser.avatar || currentUser.name[0]}}</view>
+      <text class="user-name">{{currentUser.name}}</text>
+    </view>
+    <button class="btn-switch" 
+            bindtap="showUserPicker">
+      {{currentUser ? '切换用户' : '选择登录身份'}}
+    </button>
+  </view>
+
+  <view class="picker-mask" 
+        wx:if="{{showPicker}}" 
+        bindtap="hideUserPicker">
+    <view class="picker-content" catchtap="preventClose">
+      <view class="picker-header">选择身份</view>
+      <scroll-view class="user-list" scroll-y>
+        <view class="user-option {{user.name === currentUser.name ? 'active' : ''}}"
+              wx:for="{{userOptions}}"
+              wx:for-item="user"
+              wx:key="name"
+              bindtap="selectUser"
+              data-user="{{user}}">
+          <text>{{user.name}}</text>
+          <text class="user-role">{{user.role}}</text>
+        </view>
+      </scroll-view>
+      <button class="btn-add-user" bindtap="showAddUserModal">+ 添加新用户</button>
+    </view>
+  </view>
+
+  <view class="modal-mask" wx:if="{{showAddUserModal}}">
+    <view class="modal-content">
+      <view class="modal-header">添加用户</view>
+      <view class="modal-body">
+        <input class="modal-input" 
+               placeholder="请输入姓名"
+               bindinput="onNewUserName"/>
+      </view>
+      <view class="modal-footer">
+        <button class="btn-cancel" bindtap="hideAddUserModal">取消</button>
+        <button class="btn-confirm" bindtap="confirmAddUser">确认</button>
+      </view>
+    </view>
+  </view>
+
+  <view class="tab-bar">
+    <view class="tab-item {{activeTab === 'myCards' ? 'active' : ''}}"
+          bindtap="switchTab"
+          data-tab="myCards">
+      我的卡
+    </view>
+    <view class="tab-item {{activeTab === 'myUsage' ? 'active' : ''}}"
+          bindtap="switchTab"
+          data-tab="myUsage">
+      我刷的卡
+    </view>
+  </view>
+
+  <view class="tab-content" wx:if="{{activeTab === 'myCards'}}">
+    <view class="my-card-item"
+          wx:for="{{myCards}}"
+          wx:key="_id"
+          bindtap="goToCardDetail"
+          data-id="{{item._id}}">
+      <view class="my-card-main">
+        <text class="my-card-gym">{{item.gym_name}}</text>
+        <text class="my-card-count">
+          剩余 {{item.remain_times}}/{{item.total_times}} 次
+        </text>
+      </view>
+      <text class="my-card-price">¥{{item.price_per_time}}/次</text>
+    </view>
+    
+    <view class="empty-tab" wx:if="{{myCards.length === 0}}">
+      <text>您还没有次卡</text>
+    </view>
+  </view>
+
+  <view class="tab-content" wx:if="{{activeTab === 'myUsage'}}">
+    <view class="usage-item"
+          wx:for="{{myUsageRecords}}"
+          wx:key="_id">
+      <view class="usage-left">
+        <text class="usage-gym">{{item.gym_name}}</text>
+        <text class="usage-date">{{item.use_date_display}}</text>
+      </view>
+      <view class="usage-right">
+        <text class="usage-times">-{{item.use_count}}次</text>
+        <text class="usage-card-owner">卡主：{{item.card_owner}}</text>
+      </view>
+    </view>
+    
+    <view class="empty-tab" wx:if="{{myUsageRecords.length === 0}}">
+      <text>暂无刷卡记录</text>
+    </view>
+  </view>
+</view>

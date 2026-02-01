@@ -1,0 +1,124 @@
+<view class="container">
+  <view class="card-info">
+    <view class="gym-header">
+      <text class="gym-name">{{card.gym_name}}</text>
+      <view class="status-badge" 
+            wx:if="{{card.days_until_expiry <= 30 && card.days_until_expiry > 0}}">
+        即将过期
+      </view>
+    </view>
+    
+    <view class="info-grid">
+      <view class="info-item">
+        <text class="label">办卡人</text>
+        <text class="value">{{card.owner_name}}</text>
+      </view>
+      <view class="info-item">
+        <text class="label">单次价格</text>
+        <text class="value price">¥{{card.price_per_time}}</text>
+      </view>
+      <view class="info-item">
+        <text class="label">总次数</text>
+        <text class="value">{{card.total_times}}次</text>
+      </view>
+      <view class="info-item">
+        <text class="label">剩余次数</text>
+        <text class="value highlight">{{card.remain_times}}次</text>
+      </view>
+      <view class="info-item full-width">
+        <text class="label">截止日期</text>
+        <text class="value">{{card.expiry_date_display}}</text>
+      </view>
+    </view>
+    
+    <view class="progress-section">
+      <view class="progress-bar">
+        <view class="progress-fill" 
+              style="width: {{usagePercent}}%"></view>
+      </view>
+      <text class="progress-text">
+        已使用 {{card.total_times - card.remain_times}} 次，剩余 {{card.remain_times}} 次
+      </text>
+    </view>
+  </view>
+
+  <view class="shared-section" wx:if="{{card.shared_with.length > 0}}">
+    <text class="section-title">共同持有者</text>
+    <view class="shared-list">
+      <view class="shared-tag" wx:for="{{card.shared_with}}" wx:key="*this">
+        {{item}}
+      </view>
+    </view>
+  </view>
+
+  <view class="action-section">
+    <button class="btn btn-primary" 
+            bindtap="makePhoneCall">
+      <text>拨打电话</text>
+    </button>
+    
+    <button class="btn btn-secondary" 
+            bindtap="showRecordModal">
+      <text>登记刷卡</text>
+    </button>
+  </view>
+
+  <view class="records-section">
+    <text class="section-title">刷卡记录</text>
+    <view class="record-list" 
+          wx:if="{{usageLogs.length > 0}}">
+      <view class="record-item" 
+            wx:for="{{usageLogs}}" 
+            wx:key="_id">
+        <view class="record-left">
+          <text class="record-user">{{item.user_name}}</text>
+          <text class="record-date">{{item.use_date_display}}</text>
+        </view>
+        <view class="record-right">
+          <text class="record-count">-{{item.use_count}}次</text>
+        </view>
+      </view>
+    </view>
+    <view class="empty-records" wx:else>
+      <text>暂无刷卡记录</text>
+    </view>
+  </view>
+</view>
+
+<view class="modal-mask" 
+      wx:if="{{showModal}}" 
+      bindtap="hideRecordModal">
+  <view class="modal-content" 
+        catchtap="preventClose">
+    <view class="modal-header">登记刷卡</view>
+    
+    <view class="modal-body">
+      <view class="input-group">
+        <text class="input-label">刷卡人姓名</text>
+        <input class="modal-input" 
+               placeholder="请输入刷卡人姓名"
+               bindinput="onUserNameInput"/>
+      </view>
+      
+      <view class="input-group">
+        <text class="input-label">使用次数</text>
+        <view class="count-selector">
+          <button class="count-btn" 
+                  bindtap="decreaseCount">-</button>
+          <text class="count-value">{{useCount}}</text>
+          <button class="count-btn" 
+                  bindtap="increaseCount">+</button>
+        </view>
+      </view>
+      
+      <view class="modal-tip">
+        本次消费 ¥{{card.price_per_time * useCount}}
+      </view>
+    </view>
+    
+    <view class="modal-footer">
+      <button class="btn-cancel" bindtap="hideRecordModal">取消</button>
+      <button class="btn-confirm" bindtap="submitRecord">确认</button>
+    </view>
+  </view>
+</view>

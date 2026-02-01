@@ -1,0 +1,61 @@
+<view class="container">
+  <view class="search-bar">
+    <input class="search-input" 
+           placeholder="搜索岩馆名称" 
+           bindinput="onSearchInput"/>
+  </view>
+
+  <view class="card-group" 
+        wx:for="{{groupedCards}}" 
+        wx:key="gymName">
+    <view class="group-header">
+      <text class="gym-name">{{item.gymName}}</text>
+      <text class="card-count">{{item.cards.length}}张卡</text>
+    </view>
+    
+    <view class="card-list">
+      <view class="card-item {{card.remain_times === 0 ? 'disabled' : ''}}"
+            wx:for="{{item.cards}}"
+            wx:for-item="card"
+            wx:key="_id"
+            bindtap="goToDetail"
+            data-id="{{card._id}}">
+        
+        <view class="card-main">
+          <view class="card-row">
+            <text class="card-owner">{{card.owner_name}}</text>
+            <text class="card-price">¥{{card.price_per_time}}/次</text>
+          </view>
+          
+          <view class="card-row">
+            <text class="card-usage">
+              剩余 {{card.remain_times}}/{{card.total_times}} 次
+            </text>
+            <text class="card-expiry">
+              截止 {{card.expiry_date_display}}
+            </text>
+          </view>
+        </view>
+        
+        <view class="card-tags">
+          <view class="tag expiring" 
+                wx:if="{{card.days_until_expiry <= 30 && card.days_until_expiry > 0}}">
+            即将过期
+          </view>
+          <view class="tag expired" 
+                wx:if="{{card.days_until_expiry <= 0}}">
+            已过期
+          </view>
+          <view class="tag exhausted" 
+                wx:if="{{card.remain_times === 0}}">
+            已用完
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty-state" wx:if="{{groupedCards.length === 0}}">
+    <text>暂无次卡可共享</text>
+  </view>
+</view>
