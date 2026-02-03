@@ -20,14 +20,14 @@
       {
         "pagePath": "pages/index/index",
         "text": "次卡广场",
-        "iconPath": "images/tabbar/card.svg",
-        "selectedIconPath": "images/tabbar/card-active.svg"
+        "iconPath": "images/tabbar/card.png",
+        "selectedIconPath": "images/tabbar/card-active.png"
       },
       {
         "pagePath": "pages/profile/profile",
         "text": "我的",
-        "iconPath": "images/tabbar/profile.svg",
-        "selectedIconPath": "images/tabbar/profile-active.svg"
+        "iconPath": "images/tabbar/profile.png",
+        "selectedIconPath": "images/tabbar/profile-active.png"
       }
     ]
   },
