@@ -1,4 +1,4 @@
-const db = wx.cloud.database();
+const app = getApp();
 
 Page({
   data: {
@@ -18,38 +18,43 @@ Page({
     }
   },
 
-  async loadCardDetail() {
-    const cardRes = await db.collection('Cards')
-      .doc(this.data.cardId)
-      .get();
-    
-    const card = cardRes.data;
-    const usagePercent = ((card.total_times - card.remain_times) / card.total_times * 100).toFixed(0);
-    
-    this.setData({
-      card: {
-        ...card,
-        expiry_date_display: this.formatDate(card.expiry_date),
-        days_until_expiry: this.getDaysUntilExpiry(card.expiry_date)
-      },
-      usagePercent
-    });
-    
-    this.loadUsageLogs();
+  onShow() {
+    if (this.data.cardId) {
+      this.loadCardDetail();
+    }
   },
 
-  async loadUsageLogs() {
-    const logsRes = await db.collection('UsageLogs')
-      .where({ card_id: this.data.cardId })
-      .orderBy('use_date', 'desc')
-      .get();
+  loadCardDetail() {
+    const cards = wx.getStorageSync('Cards') || [];
+    const card = cards.find(c => c._id === this.data.cardId);
     
-    const logs = logsRes.data.map(log => ({
-      ...log,
-      use_date_display: this.formatDateTime(log.use_date)
-    }));
+    if (card) {
+      const usagePercent = ((card.total_times - card.remain_times) / card.total_times * 100).toFixed(0);
+      
+      this.setData({
+        card: {
+          ...card,
+          expiry_date_display: this.formatDate(card.expiry_date),
+          days_until_expiry: this.getDaysUntilExpiry(card.expiry_date)
+        },
+        usagePercent
+      });
+      
+      this.loadUsageLogs();
+    }
+  },
+
+  loadUsageLogs() {
+    const logs = wx.getStorageSync('UsageLogs') || [];
+    const cardLogs = logs
+      .filter(log => log.card_id === this.data.cardId)
+      .sort((a, b) => new Date(b.use_date) - new Date(a.use_date))
+      .map(log => ({
+        ...log,
+        use_date_display: this.formatDateTime(log.use_date)
+      }));
     
-    this.setData({ usageLogs: logs });
+    this.setData({ usageLogs: cardLogs });
   },
 
   makePhoneCall() {
@@ -96,38 +101,59 @@ Page({
     }
   },
 
-  async submitRecord() {
+  submitRecord() {
     if (!this.data.userName.trim()) {
       wx.showToast({ title: '请输入刷卡人姓名', icon: 'none' });
       return;
     }
     
+    const cards = wx.getStorageSync('Cards') || [];
+    const cardIndex = cards.findIndex(c => c._id === this.data.cardId);
+    
+    if (cardIndex === -1) {
+      wx.showToast({ title: '卡片不存在', icon: 'none' });
+      return;
+    }
+    
+    if (cards[cardIndex].remain_times < this.data.useCount) {
+      wx.showToast({ title: '剩余次数不足', icon: 'none' });
+      return;
+    }
+    
     wx.showLoading({ title: '提交中...' });
     
-    try {
-      const callRes = await wx.cloud.callFunction({
-        name: 'recordCardUsage',
-        data: {
-          cardId: this.data.cardId,
-          userName: this.data.userName.trim(),
-          useCount: this.data.useCount
-        }
-      });
+    setTimeout(() => {
+      const now = new Date().toISOString();
       
-      wx.hideLoading();
+      const newLog = {
+        _id: 'log_' + Date.now(),
+        card_id: this.data.cardId,
+        gym_name: this.data.card.gym_name,
+        user_name: this.data.userName.trim(),
+        use_date: now,
+        use_count: this.data.useCount,
+        cost_at_time: this.data.card.price_per_time
+      };
       
-      if (callRes.result.success) {
-        wx.showToast({ title: '登记成功', icon: 'success' });
-        this.setData({ showModal: false });
-        this.loadCardDetail();
-      } else {
-        throw new Error(callRes.result.error);
+      cards[cardIndex].remain_times -= this.data.useCount;
+      
+      if (cards[cardIndex].remain_times <= 0) {
+        cards[cardIndex].status = 'inactive';
+        cards[cardIndex].remain_times = 0;
       }
-    } catch (err) {
+      
+      const logs = wx.getStorageSync('UsageLogs') || [];
+      logs.unshift(newLog);
+      
+      wx.setStorageSync('Cards', cards);
+      wx.setStorageSync('UsageLogs', logs);
+      
       wx.hideLoading();
-      console.error('登记失败:', err);
-      wx.showToast({ title: '登记失败', icon: 'none' });
-    }
+      
+      wx.showToast({ title: '登记成功', icon: 'success' });
+      this.setData({ showModal: false });
+      this.loadCardDetail();
+    }, 500);
   },
 
   getDaysUntilExpiry(expiryDate) {

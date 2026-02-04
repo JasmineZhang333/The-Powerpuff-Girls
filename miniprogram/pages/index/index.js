@@ -1,5 +1,3 @@
-const db = wx.cloud.database();
-
 Page({
   data: {
     allCards: [],
@@ -15,31 +13,25 @@ Page({
     this.loadCards();
   },
 
-  async loadCards() {
-    try {
-      const res = await db.collection('Cards')
-        .where({
-          status: 'active',
-          remain_times: db.command.gt(0)
-        })
-        .get();
-      
-      const cards = res.data.map(card => ({
-        ...card,
-        expiry_date_display: this.formatDate(card.expiry_date),
-        days_until_expiry: this.getDaysUntilExpiry(card.expiry_date)
-      }));
-      
-      this.setData({ 
-        allCards: cards,
-        filteredCards: cards 
-      });
-      
-      this.groupByGym(cards);
-    } catch (err) {
-      console.error('加载卡片失败:', err);
-      wx.showToast({ title: '加载失败', icon: 'none' });
-    }
+  loadCards() {
+    const cards = wx.getStorageSync('Cards') || [];
+    
+    const filtered = cards.filter(card => 
+      card.status === 'active' && card.remain_times > 0
+    );
+    
+    const processedCards = filtered.map(card => ({
+      ...card,
+      expiry_date_display: this.formatDate(card.expiry_date),
+      days_until_expiry: this.getDaysUntilExpiry(card.expiry_date)
+    }));
+    
+    this.setData({ 
+      allCards: processedCards,
+      filteredCards: processedCards 
+    });
+    
+    this.groupByGym(processedCards);
   },
 
   groupByGym(cards) {

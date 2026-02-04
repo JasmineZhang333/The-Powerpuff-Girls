@@ -1,0 +1,123 @@
+<view class="container">
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">添加次卡</text>
+    </view>
+    
+    <view class="form-group">
+      <text class="label">岩馆名称</text>
+      <input class="input" 
+             placeholder="请输入岩馆名称"
+             value="{{newCard.gym_name}}"
+             bindinput="onGymNameInput"/>
+    </view>
+    
+    <view class="form-group">
+      <text class="label">办卡人</text>
+      <input class="input" 
+             placeholder="请输入办卡人姓名"
+             value="{{newCard.owner_name}}"
+             bindinput="onOwnerNameInput"/>
+    </view>
+    
+    <view class="form-row">
+      <view class="form-group half">
+        <text class="label">单次价格</text>
+        <input class="input" 
+               type="number"
+               placeholder="¥"
+               value="{{newCard.price_per_time}}"
+               bindinput="onPriceInput"/>
+      </view>
+      <view class="form-group half">
+        <text class="label">总次数</text>
+        <input class="input" 
+               type="number"
+               placeholder="次"
+               value="{{newCard.total_times}}"
+               bindinput="onTotalTimesInput"/>
+      </view>
+    </view>
+    
+    <view class="form-group">
+      <text class="label">截止日期</text>
+      <picker mode="date" 
+              value="{{newCard.expiry_date}}" 
+              bindchange="onDateChange">
+        <view class="picker">
+          {{newCard.expiry_date || '请选择截止日期'}}
+        </view>
+      </picker>
+    </view>
+    
+    <view class="form-group">
+      <text class="label">联系电话</text>
+      <input class="input" 
+             type="number"
+             placeholder="请输入联系电话"
+             value="{{newCard.phone}}"
+             bindinput="onPhoneInput"/>
+    </view>
+    
+    <button class="btn btn-primary" bindtap="addCard">添加次卡</button>
+  </view>
+  
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">数据管理</text>
+    </view>
+    
+    <view class="action-list">
+      <view class="action-item" bindtap="exportData">
+        <view class="action-info">
+          <text class="action-name">导出数据</text>
+          <text class="action-desc">将数据保存为 JSON 文件，可分享给其他用户</text>
+        </view>
+        <text class="action-arrow">→</text>
+      </view>
+      
+      <view class="action-item" bindtap="importData">
+        <view class="action-info">
+          <text class="action-name">导入数据</text>
+          <text class="action-desc">从 JSON 文件导入数据，覆盖当前数据</text>
+        </view>
+        <text class="action-arrow">→</text>
+      </view>
+      
+      <view class="action-item danger" bindtap="clearData">
+        <view class="action-info">
+          <text class="action-name">清空数据</text>
+          <text class="action-desc">删除所有次卡和刷卡记录</text>
+        </view>
+        <text class="action-arrow">→</text>
+      </view>
+    </view>
+  </view>
+  
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">次卡列表</text>
+      <text class="count">{{cards.length}} 张</text>
+    </view>
+    
+    <view class="card-list">
+      <view class="card-item" 
+            wx:for="{{cards}}" 
+            wx:key="_id">
+        <view class="card-main">
+          <text class="card-gym">{{item.gym_name}}</text>
+          <text class="card-owner">{{item.owner_name}} · ¥{{item.price_per_time}}/次</text>
+          <text class="card-times">剩余 {{item.remain_times}}/{{item.total_times}} 次</text>
+        </view>
+        <view class="card-actions">
+          <button class="btn-small" bindtap="editCard" data-index="{{index}}">编辑</button>
+          <button class="btn-small danger" bindtap="deleteCard" data-index="{{index}}">删除</button>
+        </view>
+      </view>
+      
+      <view class="empty" wx:if="{{cards.length === 0}}">
+        <text>暂无次卡</text>
+      </view>
+    </view>
+  </view>
+</view>

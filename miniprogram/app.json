@@ -1,6 +1,7 @@
 {
   "pages": [
     "pages/index/index",
+    "pages/quick-use/quick-use",
     "pages/profile/profile",
     "pages/card-detail/detail"
   ],
@@ -22,6 +23,12 @@
         "text": "次卡广场",
         "iconPath": "images/tabbar/card.png",
         "selectedIconPath": "images/tabbar/card-active.png"
+      },
+      {
+        "pagePath": "pages/quick-use/quick-use",
+        "text": "一键上墙",
+        "iconPath": "images/tabbar/climb.png",
+        "selectedIconPath": "images/tabbar/climb-active.png"
       },
       {
         "pagePath": "pages/profile/profile",

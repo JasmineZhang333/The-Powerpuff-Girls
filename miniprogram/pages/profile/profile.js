@@ -1,5 +1,3 @@
-const db = wx.cloud.database();
-
 Page({
   data: {
     currentUser: null,
@@ -12,8 +10,14 @@ Page({
     userOptions: [
       { name: '阿卓', role: '办卡人' },
       { name: '周周', role: '办卡人' },
-      { name: '小王', role: '共同使用者' },
-      { name: '小李', role: '共同使用者' }
+      { name: '小又', role: '办卡人' },
+      { name: '张小葱', role: '办卡人' },
+      { name: '土豆', role: '办卡人' },
+      { name: '小姜', role: '办卡人' },
+      { name: '大块头', role: '办卡人' },
+      { name: '茄子', role: '办卡人' },
+      { name: '小糕', role: '办卡人' },
+      { name: '徐高兴', role: '办卡人' }
     ]
   },
 
@@ -23,53 +27,37 @@ Page({
     }
   },
 
-  async loadMyData() {
-    await Promise.all([
-      this.loadMyCards(),
-      this.loadMyUsageRecords()
-    ]);
+  loadMyData() {
+    this.loadMyCards();
+    this.loadMyUsageRecords();
   },
 
-  async loadMyCards() {
-    try {
-      const res = await db.collection('Cards')
-        .where({
-          owner_name: this.data.currentUser.name,
-          status: 'active'
-        })
-        .get();
-      
-      this.setData({ myCards: res.data });
-    } catch (err) {
-      console.error('加载我的卡片失败:', err);
-    }
+  loadMyCards() {
+    const cards = wx.getStorageSync('Cards') || [];
+    const myCards = cards.filter(card => 
+      card.owner_name === this.data.currentUser.name && 
+      card.status === 'active'
+    );
+    this.setData({ myCards });
   },
 
-  async loadMyUsageRecords() {
-    try {
-      const res = await db.collection('UsageLogs')
-        .where({
-          user_name: this.data.currentUser.name
-        })
-        .orderBy('use_date', 'desc')
-        .get();
-      
-      const records = await Promise.all(res.data.map(async log => {
-        const cardRes = await db.collection('Cards')
-          .doc(log.card_id)
-          .get();
-        return {
-          ...log,
-          gym_name: cardRes.data ? cardRes.data.gym_name : '未知岩馆',
-          card_owner: cardRes.data ? cardRes.data.owner_name : '未知',
-          use_date_display: this.formatDate(log.use_date)
-        };
-      }));
-      
-      this.setData({ myUsageRecords: records });
-    } catch (err) {
-      console.error('加载刷卡记录失败:', err);
-    }
+  loadMyUsageRecords() {
+    const logs = wx.getStorageSync('UsageLogs') || [];
+    const cards = wx.getStorageSync('Cards') || [];
+    
+    const myLogs = logs.filter(log => log.user_name === this.data.currentUser.name);
+    
+    const records = myLogs.map(log => {
+      const card = cards.find(c => c._id === log.card_id);
+      return {
+        ...log,
+        gym_name: card ? card.gym_name : '未知岩馆',
+        card_owner: card ? card.owner_name : '未知',
+        use_date_display: this.formatDate(log.use_date)
+      };
+    });
+    
+    this.setData({ myUsageRecords: records });
   },
 
   showUserPicker() {

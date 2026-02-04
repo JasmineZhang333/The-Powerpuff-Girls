@@ -1,0 +1,93 @@
+<view class="container">
+  <view class="header">
+    <text class="header-title">🎿 一键上墙</text>
+    <text class="header-desc">选择一张次卡,开始攀岩!</text>
+  </view>
+
+  <view class="current-user" bindtap="changeUser">
+    <text class="user-label">当前用户:</text>
+    <text class="user-name">{{currentUser.name}}</text>
+    <text class="user-arrow">切换 ▼</text>
+  </view>
+
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">选择要使用的次卡</text>
+      <text class="section-count">{{availableCards.length}}张可用</text>
+    </view>
+
+    <view class="card-list">
+      <view class="card-item {{item.remain_times <= 1 ? 'last-one' : ''}}"
+            wx:for="{{availableCards}}"
+            wx:key="_id">
+        
+        <view class="card-info" bindtap="selectCard" data-index="{{index}}">
+          <view class="card-gym">{{item.gym_name}}</view>
+          <view class="card-owner">持卡人: {{item.owner_name}}</view>
+          <view class="card-usage">
+            <text class="usage-highlight">{{item.remain_times}}</text> 次可用
+          </view>
+        </view>
+
+        <view class="card-actions">
+          <view class="price-tag">¥{{item.price_per_time}}/次</view>
+          <button class="use-btn {{item.remain_times <= 0 ? 'disabled' : ''}}" 
+                  bindtap="useCard" 
+                  data-index="{{index}}"
+                  disabled="{{item.remain_times <= 0}}">
+            {{item.remain_times <= 0 ? '已用完' : '使用'}}
+          </button>
+        </view>
+
+        <view class="selected-indicator" wx:if="{{selectedIndex === index}}">
+          <text>✓ 已选择</text>
+        </view>
+      </view>
+
+      <view class="empty-state" wx:if="{{availableCards.length === 0}}">
+        <text class="empty-icon">🎽</text>
+        <text class="empty-text">暂无可用的次卡</text>
+        <text class="empty-tip">请先添加次卡或联系持卡人分享</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="quick-actions">
+    <view class="action-card" bindtap="showRecentRecords">
+      <text class="action-icon">📋</text>
+      <text class="action-text">最近记录</text>
+    </view>
+    <view class="action-card" bindtap="scanQRCode">
+      <text class="action-icon">📱</text>
+      <text class="action-text">扫码使用</text>
+    </view>
+    <view class="action-card" bindtap="addQuickCard">
+      <text class="action-icon">➕</text>
+      <text class="action-text">快速加卡</text>
+    </view>
+  </view>
+
+  <view class="usage-tips">
+    <text class="tips-title">💡 使用提示</text>
+    <text class="tips-content">选择一张次卡后点击"使用"按钮,系统将自动扣除一次并记录您的使用信息。</text>
+  </view>
+
+  <view class="user-picker-mask" wx:if="{{showUserPicker}}" bindtap="hideUserPicker"></view>
+  <view class="user-picker {{showUserPicker ? 'show' : ''}}">
+    <view class="picker-header">
+      <text class="picker-cancel" bindtap="hideUserPicker">取消</text>
+      <text class="picker-title">选择用户</text>
+      <text class="picker-confirm" bindtap="confirmSelectUser">确定</text>
+    </view>
+    <scroll-view class="picker-list" scroll-y>
+      <view class="picker-item {{item.name === tempUser.name ? 'selected' : ''}}"
+            wx:for="{{userOptions}}"
+            wx:key="name"
+            bindtap="selectTempUser" 
+            data-user="{{item}}">
+        <text class="picker-name">{{item.name}}</text>
+        <text class="picker-role">({{item.role}})</text>
+      </view>
+    </scroll-view>
+  </view>
+</view>
