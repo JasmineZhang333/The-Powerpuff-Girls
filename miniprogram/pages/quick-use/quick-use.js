@@ -19,7 +19,12 @@ Page({
       { name: '徐高兴', role: '办卡人' }
     ],
     tempUser: null,
-    recentRecords: []
+    recentRecords: [],
+    
+    // 岩馆分组
+    gymList: [],
+    selectedGym: '',
+    groupedCards: {}
   },
 
   onLoad() {
@@ -45,22 +50,60 @@ Page({
   loadCards() {
     const cards = wx.getStorageSync('Cards') || [];
     
+    // 过滤有效次卡
     const available = cards.filter(card => 
       card.status === 'active' && 
       card.remain_times > 0
     ).map(card => ({
       ...card,
       gym_name_display: card.gym_name,
-      expiry_date_display: card.expiry_date ? this.formatDate(card.expiry_date) : '无截止日期'
+      expiry_date_display: card.expiry_date ? this.formatDate(card.expiry_date) : '无截止日期',
+      phone_display: card.phone ? this.formatPhone(card.phone) : ''
     }));
 
-    this.setData({ availableCards: available });
+    // 按岩馆分组
+    const gymMap = {};
+    const gymList = [];
+    
+    available.forEach(card => {
+      if (!gymMap[card.gym_name]) {
+        gymMap[card.gym_name] = [];
+        gymList.push(card.gym_name);
+      }
+      gymMap[card.gym_name].push(card);
+    });
+
+    // 按岩馆名称排序
+    gymList.sort();
+
+    this.setData({ 
+      availableCards: available,
+      gymList: gymList,
+      selectedGym: gymList.length > 0 ? gymList[0] : '',
+      groupedCards: gymMap
+    });
   },
 
   formatDate(dateStr) {
     if (!dateStr) return '无截止日期';
     const date = new Date(dateStr);
-    return `${date.getMonth() + 1}月${date.getDate()}日`;
+    return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+  },
+
+  formatPhone(phone) {
+    if (!phone) return '';
+    return phone;
+  },
+
+  onGymChange(e) {
+    const index = parseInt(e.detail.value);
+    const selectedGym = this.data.gymList[index];
+    this.setData({ selectedGym });
+  },
+
+  switchGym(e) {
+    const gym = e.currentTarget.dataset.gym;
+    this.setData({ selectedGym: gym });
   },
 
   changeUser() {
@@ -92,8 +135,7 @@ Page({
   },
 
   useCard(e) {
-    const index = e.currentTarget.dataset.index;
-    const card = this.data.availableCards[index];
+    const card = e.currentTarget.dataset.card;
     
     if (!card || card.remain_times <= 0) {
       wx.showToast({

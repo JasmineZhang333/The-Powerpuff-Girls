@@ -1,7 +1,7 @@
 <view class="container">
   <view class="header">
     <text class="header-title">🎿 一键上墙</text>
-    <text class="header-desc">选择一张次卡,开始攀岩!</text>
+    <text class="header-desc">选择岩馆,快速刷卡!</text>
   </view>
 
   <view class="current-user" bindtap="changeUser">
@@ -12,43 +12,64 @@
 
   <view class="section">
     <view class="section-header">
-      <text class="section-title">选择要使用的次卡</text>
-      <text class="section-count">{{availableCards.length}}张可用</text>
+      <text class="section-title">选择岩馆</text>
+      <text class="section-count">{{gymList.length}}个岩馆</text>
     </view>
 
-    <view class="card-list">
-      <view class="card-item {{item.remain_times <= 1 ? 'last-one' : ''}}"
-            wx:for="{{availableCards}}"
-            wx:key="_id">
-        
-        <view class="card-info" bindtap="selectCard" data-index="{{index}}">
-          <view class="card-gym">{{item.gym_name}}</view>
-          <view class="card-owner">持卡人: {{item.owner_name}}</view>
-          <view class="card-usage">
-            <text class="usage-highlight">{{item.remain_times}}</text> 次可用
+    <picker mode="selector" 
+            range="{{gymList}}" 
+            bindchange="onGymChange">
+      <view class="gym-picker">
+        <text class="picker-label">当前岩馆:</text>
+        <text class="picker-value">{{selectedGym}}</text>
+        <text class="picker-arrow">▼</text>
+      </view>
+    </picker>
+
+    <view class="gym-cards" wx:if="{{selectedGym && groupedCards[selectedGym]}}">
+      <view class="cards-header">
+        <text class="cards-title">{{selectedGym}}</text>
+        <text class="cards-count">{{groupedCards[selectedGym].length}}张可用</text>
+      </view>
+
+      <view class="card-list">
+        <view class="card-item {{item.remain_times <= 1 ? 'last-one' : ''}}"
+              wx:for="{{groupedCards[selectedGym]}}"
+              wx:key="_id">
+          
+          <view class="card-info">
+            <view class="card-row">
+              <text class="card-owner">{{item.owner_name}}</text>
+              <text class="card-phone" wx:if="{{item.phone}}">{{item.phone}}</text>
+              <text class="card-price">¥{{item.price_per_time}}/次</text>
+            </view>
+            
+            <view class="card-row">
+              <text class="card-times">剩余 <text class="highlight">{{item.remain_times}}</text> 次</text>
+              <text class="card-expiry">{{item.expiry_date_display}}</text>
+            </view>
+            
+            <view class="card-row" wx:if="{{item.shared_with.length > 0}}">
+              <text class="shared-info">共享给: {{item.shared_with.join(', ')}}</text>
+            </view>
+          </view>
+
+          <view class="card-actions">
+            <button class="use-btn {{item.remain_times <= 0 ? 'disabled' : ''}}" 
+                    bindtap="useCard" 
+                    data-card="{{item}}"
+                    disabled="{{item.remain_times <= 0}}">
+              {{item.remain_times <= 0 ? '已用完' : '使用'}}
+            </button>
           </view>
         </view>
-
-        <view class="card-actions">
-          <view class="price-tag">¥{{item.price_per_time}}/次</view>
-          <button class="use-btn {{item.remain_times <= 0 ? 'disabled' : ''}}" 
-                  bindtap="useCard" 
-                  data-index="{{index}}"
-                  disabled="{{item.remain_times <= 0}}">
-            {{item.remain_times <= 0 ? '已用完' : '使用'}}
-          </button>
-        </view>
-
-        <view class="selected-indicator" wx:if="{{selectedIndex === index}}">
-          <text>✓ 已选择</text>
-        </view>
       </view>
+    </view>
 
-      <view class="empty-state" wx:if="{{availableCards.length === 0}}">
-        <text class="empty-icon">🎽</text>
-        <text class="empty-text">暂无可用的次卡</text>
-        <text class="empty-tip">请先添加次卡或联系持卡人分享</text>
-      </view>
+    <view class="empty-state" wx:if="{{!selectedGym || gymList.length === 0}}">
+      <text class="empty-icon">🎽</text>
+      <text class="empty-text">暂无可用的次卡</text>
+      <text class="empty-tip">请先添加次卡或联系持卡人分享</text>
     </view>
   </view>
 
@@ -69,7 +90,23 @@
 
   <view class="usage-tips">
     <text class="tips-title">💡 使用提示</text>
-    <text class="tips-content">选择一张次卡后点击"使用"按钮,系统将自动扣除一次并记录您的使用信息。</text>
+    <text class="tips-content">选择岩馆后,点击下方次卡的"使用"按钮,系统将自动扣除一次并记录您的使用信息。</text>
+  </view>
+
+  <view class="gym-tabs" wx:if="{{gymList.length > 1}}">
+    <scroll-view class="tabs-scroll" scroll-x="true" enhanced="true" show-scrollbar="false">
+      <view class="tabs-list">
+        <view class="tab-item {{gym === selectedGym ? 'active' : ''}}"
+              wx:for="{{gymList}}"
+              wx:for-item="gym"
+              wx:key="gym"
+              bindtap="switchGym"
+              data-gym="{{gym}}">
+          <text class="tab-name">{{gym}}</text>
+          <text class="tab-count">{{groupedCards[gym].length}}张</text>
+        </view>
+      </view>
+    </scroll-view>
   </view>
 
   <view class="user-picker-mask" wx:if="{{showUserPicker}}" bindtap="hideUserPicker"></view>

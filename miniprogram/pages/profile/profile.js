@@ -122,6 +122,6 @@ Page({
 
   formatDate(dateStr) {
     const date = new Date(dateStr);
-    return `${date.getMonth() + 1}月${date.getDate()}日 ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
+    return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
   }
 });

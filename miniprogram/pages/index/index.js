@@ -2,7 +2,9 @@ Page({
   data: {
     allCards: [],
     groupedCards: [],
-    filteredCards: []
+    filteredCards: [],
+    gymList: [],
+    selectedGymIndex: 0
   },
 
   onLoad() {
@@ -43,12 +45,17 @@ Page({
       groups[card.gym_name].push(card);
     });
     
-    const groupedCards = Object.keys(groups).map(gymName => ({
+    const gymList = Object.keys(groups).sort();
+    
+    const groupedCards = gymList.map(gymName => ({
       gymName,
       cards: groups[gymName]
     }));
     
-    this.setData({ groupedCards });
+    this.setData({ 
+      groupedCards,
+      gymList
+    });
   },
 
   getDaysUntilExpiry(expiryDate) {
@@ -60,7 +67,7 @@ Page({
 
   formatDate(dateStr) {
     const date = new Date(dateStr);
-    return `${date.getMonth() + 1}月${date.getDate()}日`;
+    return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
   },
 
   goToDetail(e) {
@@ -70,13 +77,17 @@ Page({
     });
   },
 
-  onSearchInput(e) {
-    const keyword = e.detail.value.toLowerCase();
-    const filtered = this.data.allCards.filter(card => 
-      card.gym_name.toLowerCase().includes(keyword) ||
-      card.owner_name.toLowerCase().includes(keyword)
-    );
-    this.setData({ filteredCards: filtered });
-    this.groupByGym(filtered);
+  onGymChange(e) {
+    const index = parseInt(e.detail.value);
+    this.setData({ selectedGymIndex: index });
+    
+    if (index === 0) {
+      this.setData({ filteredCards: this.data.allCards });
+    } else {
+      const selectedGym = this.data.gymList[index];
+      const filtered = this.data.allCards.filter(card => card.gym_name === selectedGym);
+      this.setData({ filteredCards: filtered });
+    }
+    this.groupByGym(this.data.filteredCards);
   }
 });

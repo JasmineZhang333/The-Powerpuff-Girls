@@ -1,9 +1,14 @@
 <view class="container">
-  <view class="search-bar">
-    <input class="search-input" 
-           placeholder="搜索岩馆名称" 
-           bindinput="onSearchInput"/>
+  <view class="gym-summary" wx:if="{{gymList.length > 0}}">
+    <text class="gym-summary-text">共{{gymList.length}}个岩馆：{{gymList.join('、')}}</text>
   </view>
+
+  <picker bindchange="onGymChange" value="{{selectedGymIndex}}" range="{{gymList}}">
+    <view class="picker-bar">
+      <text class="picker-text">{{selectedGymIndex === 0 ? '全部岩馆' : gymList[selectedGymIndex]}}</text>
+      <text class="picker-arrow">▼</text>
+    </view>
+  </picker>
 
   <view class="card-group" 
         wx:for="{{groupedCards}}" 

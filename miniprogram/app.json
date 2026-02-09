@@ -5,6 +5,7 @@
     "pages/profile/profile",
     "pages/card-detail/detail"
   ],
+  "lazyCodeLoading": "requiredComponents",
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#1a1a1a",

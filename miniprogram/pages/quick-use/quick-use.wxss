@@ -79,6 +79,61 @@
   border-radius: 20rpx;
 }
 
+.gym-picker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #2d2d2d 0%, #3d3d3d 100%);
+  padding: 25rpx 30rpx;
+  border-radius: 15rpx;
+  margin-bottom: 30rpx;
+  border: 2rpx solid #3d3d3d;
+}
+
+.picker-label {
+  font-size: 28rpx;
+  color: #888;
+}
+
+.picker-value {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #f5a623;
+  flex: 1;
+  margin-left: 20rpx;
+}
+
+.picker-arrow {
+  font-size: 24rpx;
+  color: #888;
+}
+
+.gym-cards {
+  margin-top: 20rpx;
+}
+
+.cards-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 0;
+  margin-bottom: 20rpx;
+}
+
+.cards-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #fff;
+}
+
+.cards-count {
+  font-size: 26rpx;
+  color: #4ecdc4;
+  background: rgba(78, 205, 196, 0.1);
+  padding: 8rpx 20rpx;
+  border-radius: 20rpx;
+}
+
 .card-list {
   margin-top: 20rpx;
 }
@@ -106,6 +161,17 @@
   margin-bottom: 20rpx;
 }
 
+.card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15rpx;
+}
+
+.card-row:last-child {
+  margin-bottom: 0;
+}
+
 .card-gym {
   font-size: 36rpx;
   font-weight: bold;
@@ -114,27 +180,55 @@
 }
 
 .card-owner {
-  font-size: 26rpx;
-  color: #888;
-  margin-bottom: 15rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #fff;
 }
 
-.card-usage {
+.card-phone {
+  font-size: 26rpx;
+  color: #888;
+  margin-left: 20rpx;
+}
+
+.card-price {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #4ecdc4;
+}
+
+.card-times {
   font-size: 28rpx;
   color: #ccc;
 }
 
-.usage-highlight {
-  font-size: 40rpx;
+.card-times .highlight {
+  font-size: 36rpx;
   font-weight: bold;
   color: #f5a623;
-  margin: 0 8rpx;
+}
+
+.card-expiry {
+  font-size: 26rpx;
+  color: #888;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 6rpx 16rpx;
+  border-radius: 10rpx;
+}
+
+.shared-info {
+  font-size: 24rpx;
+  color: #888;
+  font-style: italic;
 }
 
 .card-actions {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
+  margin-top: 20rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid #3d3d3d;
 }
 
 .price-tag {
@@ -244,6 +338,67 @@
   font-size: 26rpx;
   color: #aaa;
   line-height: 1.6;
+}
+
+.gym-tabs {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(180deg, #2d2d2d 0%, #1a1a1a 100%);
+  padding: 20rpx;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  border-top: 2rpx solid #3d3d3d;
+  z-index: 100;
+}
+
+.tabs-scroll {
+  width: 100%;
+  white-space: nowrap;
+}
+
+.tabs-list {
+  display: inline-flex;
+  padding: 10rpx 0;
+}
+
+.tab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #2d2d2d 0%, #3d3d3d 100%);
+  border-radius: 15rpx;
+  padding: 20rpx 30rpx;
+  margin-right: 20rpx;
+  min-width: 120rpx;
+  border: 2rpx solid transparent;
+  transition: all 0.3s ease;
+}
+
+.tab-item:last-child {
+  margin-right: 0;
+}
+
+.tab-item.active {
+  border-color: #f5a623;
+  background: linear-gradient(135deg, #3d2d2d 0%, #4d3d3d 100%);
+}
+
+.tab-name {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 8rpx;
+}
+
+.tab-count {
+  font-size: 22rpx;
+  color: #888;
+}
+
+.tab-item.active .tab-count {
+  color: #f5a623;
 }
 
 .user-picker-mask {
