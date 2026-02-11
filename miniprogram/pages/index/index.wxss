@@ -123,6 +123,11 @@ page {
   border-radius: 20rpx;
 }
 
+.tag.not-opened {
+  background-color: rgba(33, 150, 243, 0.2);
+  color: #2196f3;
+}
+
 .tag.expiring {
   background-color: rgba(245, 166, 35, 0.2);
   color: #f5a623;
@@ -142,4 +147,65 @@ page {
   text-align: center;
   padding: 100rpx 0;
   color: #666666;
+}
+
+.gym-tabs {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+  padding: 20rpx;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  border-top: 2rpx solid #333333;
+  z-index: 100;
+}
+
+.tabs-scroll {
+  width: 100%;
+  white-space: nowrap;
+}
+
+.tabs-list {
+  display: inline-flex;
+  padding: 10rpx 0;
+}
+
+.tab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
+  border-radius: 15rpx;
+  padding: 20rpx 30rpx;
+  margin-right: 20rpx;
+  min-width: 120rpx;
+  border: 2rpx solid transparent;
+  transition: all 0.3s ease;
+}
+
+.tab-item:last-child {
+  margin-right: 0;
+}
+
+.tab-item.active {
+  border-color: #f5a623;
+  background: linear-gradient(135deg, #3a2a2a 0%, #4a3a3a 100%);
+}
+
+.tab-name {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 8rpx;
+}
+
+.tab-count {
+  font-size: 22rpx;
+  color: #888888;
+}
+
+.tab-item.active .tab-count {
+  color: #f5a623;
 }

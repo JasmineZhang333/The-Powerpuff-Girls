@@ -93,22 +93,6 @@
     <text class="tips-content">选择岩馆后,点击下方次卡的"使用"按钮,系统将自动扣除一次并记录您的使用信息。</text>
   </view>
 
-  <view class="gym-tabs" wx:if="{{gymList.length > 1}}">
-    <scroll-view class="tabs-scroll" scroll-x="true" enhanced="true" show-scrollbar="false">
-      <view class="tabs-list">
-        <view class="tab-item {{gym === selectedGym ? 'active' : ''}}"
-              wx:for="{{gymList}}"
-              wx:for-item="gym"
-              wx:key="gym"
-              bindtap="switchGym"
-              data-gym="{{gym}}">
-          <text class="tab-name">{{gym}}</text>
-          <text class="tab-count">{{groupedCards[gym].length}}张</text>
-        </view>
-      </view>
-    </scroll-view>
-  </view>
-
   <view class="user-picker-mask" wx:if="{{showUserPicker}}" bindtap="hideUserPicker"></view>
   <view class="user-picker {{showUserPicker ? 'show' : ''}}">
     <view class="picker-header">
@@ -126,5 +110,42 @@
         <text class="picker-role">({{item.role}})</text>
       </view>
     </scroll-view>
+  </view>
+
+  <view class="qrcode-mask" wx:if="{{showQRCodeModal}}" bindtap="hideQRCodeModal"></view>
+  <view class="qrcode-modal {{showQRCodeModal ? 'show' : ''}}">
+    <view class="qrcode-header">
+      <text class="qrcode-title">微信收款码</text>
+      <text class="qrcode-close" bindtap="hideQRCodeModal">✕</text>
+    </view>
+    <view class="qrcode-content">
+      <view class="qrcode-owner">
+        <text class="owner-label">持卡人:</text>
+        <text class="owner-name">{{currentQRCode.ownerName}}</text>
+      </view>
+      <view class="qrcode-gym">
+        <text class="gym-label">岩馆:</text>
+        <text class="gym-name">{{currentQRCode.gymName}}</text>
+      </view>
+      <view class="qrcode-image-container">
+        <image class="qrcode-image" 
+               src="{{currentQRCode.imagePath}}" 
+               mode="aspectFit"
+               binderror="onQRCodeError"></image>
+        <view class="qrcode-placeholder" wx:if="{{!currentQRCode.imagePath}}">
+          <text class="placeholder-icon">📱</text>
+          <text class="placeholder-text">暂无可用收款码</text>
+          <text class="placeholder-tip">请使用替代支付方式</text>
+        </view>
+      </view>
+      <view class="qrcode-price">
+        <text class="price-label">应付金额:</text>
+        <text class="price-value">¥{{currentQRCode.price}}</text>
+      </view>
+    </view>
+    <view class="qrcode-footer">
+      <button class="qrcode-cancel-btn" bindtap="hideQRCodeModal">取消</button>
+      <button class="qrcode-confirm-btn" bindtap="confirmPayment">已付款</button>
+    </view>
   </view>
 </view>

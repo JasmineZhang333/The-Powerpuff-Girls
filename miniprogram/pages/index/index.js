@@ -4,7 +4,9 @@ Page({
     groupedCards: [],
     filteredCards: [],
     gymList: [],
-    selectedGymIndex: 0
+    selectedGymIndex: 0,
+    groupedCardsObject: {},
+    selectedGymForTab: ''
   },
 
   onLoad() {
@@ -24,8 +26,9 @@ Page({
     
     const processedCards = filtered.map(card => ({
       ...card,
-      expiry_date_display: this.formatDate(card.expiry_date),
-      days_until_expiry: this.getDaysUntilExpiry(card.expiry_date)
+      expiry_date_display: card.expiry_date ? this.formatDate(card.expiry_date) : '未开卡',
+      days_until_expiry: card.expiry_date ? this.getDaysUntilExpiry(card.expiry_date) : null,
+      is_not_opened: !card.expiry_date
     }));
     
     this.setData({ 
@@ -54,8 +57,24 @@ Page({
     
     this.setData({ 
       groupedCards,
-      gymList
+      groupedCardsObject: groups,
+      gymList,
+      selectedGymForTab: gymList.length > 0 ? gymList[0] : ''
     });
+  },
+
+  switchGym(e) {
+    const gym = e.currentTarget.dataset.gym;
+    this.setData({ 
+      selectedGymForTab: gym,
+      selectedGymIndex: this.data.gymList.indexOf(gym)
+    });
+    
+    if (gym) {
+      const filtered = this.data.allCards.filter(card => card.gym_name === gym);
+      this.setData({ filteredCards: filtered });
+      this.groupByGym(filtered);
+    }
   },
 
   getDaysUntilExpiry(expiryDate) {

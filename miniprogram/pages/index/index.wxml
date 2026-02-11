@@ -43,12 +43,16 @@
         </view>
         
         <view class="card-tags">
+          <view class="tag not-opened" 
+                wx:if="{{card.is_not_opened}}">
+            未开卡
+          </view>
           <view class="tag expiring" 
-                wx:if="{{card.days_until_expiry <= 30 && card.days_until_expiry > 0}}">
+                wx:if="{{!card.is_not_opened && card.days_until_expiry <= 30 && card.days_until_expiry > 0}}">
             即将过期
           </view>
           <view class="tag expired" 
-                wx:if="{{card.days_until_expiry <= 0}}">
+                wx:if="{{!card.is_not_opened && card.days_until_expiry <= 0}}">
             已过期
           </view>
           <view class="tag exhausted" 
@@ -62,5 +66,21 @@
 
   <view class="empty-state" wx:if="{{groupedCards.length === 0}}">
     <text>暂无次卡可共享</text>
+  </view>
+
+  <view class="gym-tabs" wx:if="{{gymList.length > 1}}">
+    <scroll-view class="tabs-scroll" scroll-x="true" enhanced="true" show-scrollbar="false">
+      <view class="tabs-list">
+        <view class="tab-item {{gym === selectedGymForTab ? 'active' : ''}}"
+              wx:for="{{gymList}}"
+              wx:for-item="gym"
+              wx:key="gym"
+              bindtap="switchGym"
+              data-gym="{{gym}}">
+          <text class="tab-name">{{gym}}</text>
+          <text class="tab-count">{{groupedCardsObject[gym].length}}张</text>
+        </view>
+      </view>
+    </scroll-view>
   </view>
 </view>

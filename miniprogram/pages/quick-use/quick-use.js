@@ -24,7 +24,15 @@ Page({
     // 岩馆分组
     gymList: [],
     selectedGym: '',
-    groupedCards: {}
+    groupedCards: {},
+    
+    // 二维码弹窗
+    showQRCodeModal: false,
+    currentQRCode: {
+      ownerName: '',
+      imagePath: '',
+      price: ''
+    }
   },
 
   onLoad() {
@@ -95,15 +103,65 @@ Page({
     return phone;
   },
 
+  getQRCodePath(ownerName) {
+    const qrCodeMap = {
+      '阿卓': '../../images/qrcodes/azhuo.png',
+      '周周': '../../images/qrcodes/zhouzhou.png',
+      '小又': '../../images/qrcodes/xiaoyou.png',
+      '张小葱': '../../images/qrcodes/zhangxiaocong.png',
+      '土豆': '../../images/qrcodes/tudou.png',
+      '小姜': '../../images/qrcodes/xiaojiang.png',
+      '大块头': '../../images/qrcodes/dakuaitou.png',
+      '茄子': '../../images/qrcodes/qiezi.png',
+      '小糕': '../../images/qrcodes/xiaogao.png',
+      '徐高兴': '../../images/qrcodes/xugaoxing.png'
+    };
+    return qrCodeMap[ownerName] || '';
+  },
+
+  showQRCodeModal(card) {
+    const imagePath = this.getQRCodePath(card.owner_name);
+    this.setData({
+      showQRCodeModal: true,
+      currentQRCode: {
+        ownerName: card.owner_name,
+        imagePath: imagePath,
+        price: card.price_per_time,
+        gymName: card.gym_name,
+        cardId: card._id
+      }
+    });
+  },
+
+  hideQRCodeModal() {
+    this.setData({ showQRCodeModal: false });
+  },
+
+  onQRCodeError(e) {
+    console.log('QR code image load failed:', e);
+  },
+
+  confirmPayment() {
+    const qrCodeData = this.data.currentQRCode;
+    const cards = wx.getStorageSync('Cards') || [];
+    const card = cards.find(c => c._id === qrCodeData.cardId);
+    
+    if (!card) {
+      wx.showToast({
+        title: '次卡不存在',
+        icon: 'none'
+      });
+      return;
+    }
+
+    this.executeUseCard(card);
+    this.hideQRCodeModal();
+  },
+
   onGymChange(e) {
     const index = parseInt(e.detail.value);
     const selectedGym = this.data.gymList[index];
     this.setData({ selectedGym });
-  },
-
-  switchGym(e) {
-    const gym = e.currentTarget.dataset.gym;
-    this.setData({ selectedGym: gym });
   },
 
   changeUser() {
@@ -145,17 +203,7 @@ Page({
       return;
     }
 
-    const that = this;
-    wx.showModal({
-      title: '确认使用',
-      content: `确定要在 "${card.gym_name}" 使用持卡人 "${card.owner_name}" 的一张次卡吗？(¥${card.price_per_time})`,
-      confirmColor: '#f5a623',
-      success(res) {
-        if (res.confirm) {
-          that.executeUseCard(card);
-        }
-      }
-    });
+    this.showQRCodeModal(card);
   },
 
   executeUseCard(card) {
